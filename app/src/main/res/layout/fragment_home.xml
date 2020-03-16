@@ -1,0 +1,139 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:background="#ffffff"
+    >
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl1"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:elevation="20dp"
+            app:cardElevation="5dp"
+            app:cardBackgroundColor="#fff"
+            android:foreground="@drawable/myripple"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+
+
+                    <TextView
+                        android:textColor="@color/appprimarycolor"
+                        android:textStyle="bold"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:text="Total Orders"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+                    <TextView
+
+                        android:textColor="@color/appprimarycolor"
+                        android:textStyle="bold"
+                        android:id="@+id/tv_catsnames"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:lines="2"
+
+                        android:layout_marginTop="5dp"
+                        android:text="Delivered Orders"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+
+
+                    <TextView
+                        android:textColor="@color/appprimarycolor"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:text="289"
+                        android:textSize="50sp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+                    <TextView
+
+                        android:textColor="@color/appprimarycolor"
+                        android:id="@+id/tv_catsnames1"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:lines="2"
+                        android:layout_marginTop="5dp"
+                        android:text="106"
+                        android:textSize="50sp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/rl1"
+        android:id="@+id/recyelerview_categories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        />
+
+
+
+
+</RelativeLayout>
+
+

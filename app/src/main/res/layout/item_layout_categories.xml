@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_margin="10dp"
+        android:elevation="20dp"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="#fff"
+        android:foreground="@drawable/myripple"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <RelativeLayout
+
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            >
+
+            <ImageView
+                android:id="@+id/iv_catsitemlayout"
+                android:layout_marginTop="20dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:padding="5dp" />
+
+            <TextView
+                android:textColor="@color/appprimarycolor"
+                android:textStyle="bold"
+                android:id="@+id/tv_catsnames"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_catsitemlayout"
+                android:gravity="center"
+                android:lines="2"
+
+                android:layout_marginTop="5dp"
+                android:text="Subject Name"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+
+
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "573659935610",
+    "firebase_url": "https://fcm-real-time.firebaseio.com",
+    "project_id": "fcm-real-time",
+    "storage_bucket": "fcm-real-time.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573659935610:android:f264637f3f9605e1529cc3",
+        "android_client_info": {
+          "package_name": "com.example.fcm_with_notificationtootherappscriptwritten"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573659935610-fhi5d0ldq37uccpu2ce77pjo6e64q4g9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBumkPZwzQGNR6bvsmNU7ZVQ-sOVpAlt6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573659935610-fhi5d0ldq37uccpu2ce77pjo6e64q4g9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573659935610:android:060febc92f0de1f5529cc3",
+        "android_client_info": {
+          "package_name": "com.example.stylishjewelryboxadminphase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573659935610-2lfb25j62lcqo959qnits4u31m6agbs4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stylishjewelryboxadminphase",
+            "certificate_hash": "e25b053ef9d3afe60063ee4caf9123ac57e1826f"
+          }
+        },
+        {
+          "client_id": "573659935610-fhi5d0ldq37uccpu2ce77pjo6e64q4g9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBumkPZwzQGNR6bvsmNU7ZVQ-sOVpAlt6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573659935610-fhi5d0ldq37uccpu2ce77pjo6e64q4g9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
