@@ -13,6 +13,9 @@ import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllC
 import com.example.stylishjewelryboxadminphase.recyclerviews.assignorder.AssignOrders;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getalldeliveryboys.GetAllDeliveryBoyResponse;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getunassignedorders.gettotalorders.UnassignedDateLocationResponse;
+import com.example.stylishjewelryboxadminphase.seeDeliveryboys.jdb_details.GetJDBDetailResponse;
+import com.example.stylishjewelryboxadminphase.seeDeliveryboys.jdb_details.SeeJDBAssignedOrderResponse;
+import com.example.stylishjewelryboxadminphase.seeDeliveryboys.jdb_details.SeeJDBOrderbystatusDateResponse;
 import com.example.stylishjewelryboxadminphase.updateCategory.GetAllSubofSubCatsResponse;
 import com.example.stylishjewelryboxadminphase.updateCategory.UpdateCategoryResponse;
 import com.example.stylishjewelryboxadminphase.updateCategory.UpdateMaterialResponse;
@@ -44,6 +47,7 @@ public interface WebServices {
     String GETUNASSIGNEDORDERS = "getunassignedOrders.php";
 
     String ADD_MATERIAL = "add_new_Material.php";
+    String GET_JDB_DETAILS = "get_jdb_Details.php";
 
 
     String UPDATE_MATERIAL_NAME = "updatemeterial.php";
@@ -57,14 +61,35 @@ public interface WebServices {
     String GETALLSOSBYID = "get_all_sos_cats.php";
     String ASSIGNORDERS = "assign_order.php";
     String GETALLORDERPERCENTAGES = "getAllOrderForPercentage.php";
+    String SEE_JDB_ORDERBYSTATUS_DATE = "seedlieveryboys/getpendingbydate.php";
+    String SEE_JDB_ASSIGNED_ORDERBYSTATUS_DATE = "seedlieveryboys/get_assignedorderbydate.php";
 
 
     Retrofit RETROFIT = new Retrofit.Builder().baseUrl(BASEURL).addConverterFactory(GsonConverterFactory.create()).build();
 
 
     @FormUrlEncoded
+    @POST(SEE_JDB_ASSIGNED_ORDERBYSTATUS_DATE)
+    Call<SeeJDBAssignedOrderResponse> seeJDB_Assigned_order_By_DateStatus(@Field("id") String id,
+                                                                 @Field("currentdate") String currentdate,
+                                                                 @Field("last30days") String last30days,
+                                                                 @Field("last7days") String last7days);
+
+    @FormUrlEncoded
+    @POST(SEE_JDB_ORDERBYSTATUS_DATE)
+    Call<SeeJDBOrderbystatusDateResponse> seeJDB_order_By_DateStatus(@Field("id") String id,
+                                                                     @Field("status") String status,
+                                                                     @Field("currentdate") String currentdate,
+                                                                     @Field("last30days") String last30days,
+                                                                     @Field("last7days") String last7days);
+
+    @FormUrlEncoded
     @POST(GETALLDELIVERYBOYS)
     Call<GetAllDeliveryBoyResponse> getAll_JDBs(@Field("status") String status);
+
+    @FormUrlEncoded
+    @POST(GET_JDB_DETAILS)
+    Call<GetJDBDetailResponse> get_JDB_Details(@Field("jdbid") String jdbid);
 
 
     @FormUrlEncoded
@@ -172,7 +197,7 @@ public interface WebServices {
 
     @FormUrlEncoded
     @POST(GETALLORDERPERCENTAGES)
-    Call<GetAllForPercentageResponse> getAllOrderToMakePercentage(@Field("location") String location,@Field("date") String date);
+    Call<GetAllForPercentageResponse> getAllOrderToMakePercentage(@Field("location") String location, @Field("date") String date);
 
 
     @GET(GET_ALL_MATERIAL_NAMES)

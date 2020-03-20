@@ -2,10 +2,8 @@ package com.example.stylishjewelryboxadminphase.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.widget.Toast;
-
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.fragments.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;

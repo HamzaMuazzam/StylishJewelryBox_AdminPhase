@@ -28,7 +28,7 @@ public class TotalOrdersActivity extends AppCompatActivity implements PendingFra
         DeliveredFragment.NoOfDeliveredInterface, UnAsssignedFragment.NoOfUnAssignedInterface, TotalSaleFragment.TotalSale {
     WebServices webServices;
     public static TextView tv_totalDeliverOrder, tv_TotalPendingOrders, tv_TotalUnassignedOrders, tv_totalSale;
-    public static String DATE = "2020-03-12";
+    public static String DATE = "2020-03-18";
     public static String LOCATION = "gulberg";
     public static String strDate = null;
     private EditText ed_address;

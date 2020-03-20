@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.os.Bundle;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -375,7 +376,7 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
         counter_text.setVisibility(View.VISIBLE);
         adapter.notifyDataSetChanged();
         is_in_action = true;
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDefaultDisplayHomeAsUpEnabled(true);
         View viewById = toolbar.findViewById(R.id.item_delete);
         viewById.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -435,10 +436,10 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
             }
             array[listsize] = jdb_id;
             Toast.makeText(this, "size" + String.valueOf(array.length), Toast.LENGTH_SHORT).show();
-            System.out.println(array[0]);
-            System.out.println(array[1]);
-            System.out.println(array[2]);
-            System.out.println(array[3]);
+//            System.out.println(array[0]);
+//            System.out.println(array[1]);
+//            System.out.println(array[2]);
+//            System.out.println(array[3]);
 
             JSONArray json_array = new JSONArray();
             for (String s : array) {
