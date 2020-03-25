@@ -1,9 +1,12 @@
 package com.example.stylishjewelryboxadminphase.activities;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.Toast;
+
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.fragments.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         getSupportFragmentManager().beginTransaction().replace(R.id.mainfragment, new HomeFragment()).commit();
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Log.d("MYTAG", "getIntent: " + getIntent().getStringExtra(key));
+
+            }
+
+        }
+
+    }
 }

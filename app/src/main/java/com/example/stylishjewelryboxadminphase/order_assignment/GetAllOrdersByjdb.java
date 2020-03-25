@@ -1,10 +1,9 @@
-package com.example.stylishjewelryboxadminphase.network;
-
+package com.example.stylishjewelryboxadminphase.order_assignment;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GetOrderForAssignment {
+public class GetAllOrdersByjdb {
 
     @SerializedName("jomd_order_id")
     @Expose
@@ -44,7 +43,8 @@ public class GetOrderForAssignment {
      * No args constructor for use in serialization
      *
      */
-
+    public GetAllOrdersByjdb() {
+    }
 
     /**
      *
@@ -60,7 +60,7 @@ public class GetOrderForAssignment {
      * @param jomdDatetime
      * @param deliveredTime
      */
-    public GetOrderForAssignment(String jomdOrderId, String jomdDatetime, String jomdUid, String jomdLocation, String jomdLongitude, String jomdLatitude, String jomdInstructions, String deliveredTime, String deliveredDate, String deliveredBy, String jdbIdFk) {
+    public GetAllOrdersByjdb(String jomdOrderId, String jomdDatetime, String jomdUid, String jomdLocation, String jomdLongitude, String jomdLatitude, String jomdInstructions, String deliveredTime, String deliveredDate, String deliveredBy, String jdbIdFk) {
         super();
         this.jomdOrderId = jomdOrderId;
         this.jomdDatetime = jomdDatetime;

@@ -1,47 +1,53 @@
 package com.example.stylishjewelryboxadminphase.activities;
-import java.util.Date;
-import java.util.List;
-import retrofit2.Call;
+
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
-import android.os.Bundle;
-import java.util.Calendar;
-import java.util.Objects;
-import java.util.TimeZone;
-import retrofit2.Callback;
-import retrofit2.Response;
-import org.json.JSONArray;
-import java.util.ArrayList;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
-import android.graphics.Color;
-import android.text.TextUtils;
-import android.widget.TextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import java.text.SimpleDateFormat;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.annotation.SuppressLint;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.appcompat.app.AppCompatActivity;
-import com.example.stylishjewelryboxadminphase.R;
-import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.snackbar.Snackbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.network.WebServices;
-import com.example.stylishjewelryboxadminphase.network.GetAllOrdersByjdb;
-import com.example.stylishjewelryboxadminphase.network.GetOrderForAssignment;
-import com.example.stylishjewelryboxadminphase.network.GetAllOrdersByjdbResponse;
-import com.example.stylishjewelryboxadminphase.network.GetOrderForAssignmentResponse;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetAllOrdersByjdb;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetAllOrdersByjdbResponse;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetOrderForAssignment;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetOrderForAssignmentResponse;
 import com.example.stylishjewelryboxadminphase.recyclerviews.assignorder.AssignOrders;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getalldeliveryboys.GetAllDeliveryBoy;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getalldeliveryboys.GetAllDeliveryBoyResponse;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getallorderforassignment.GetAllOrder_Assignment_Adapter;
+import com.google.android.material.snackbar.Snackbar;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
+import org.json.JSONArray;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.TimeZone;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OrderAssignmentActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener
         , View.OnLongClickListener {
@@ -320,7 +326,7 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
         if (parent != null) {
             delivery_boy_name = parent.getItemAtPosition(position).toString();
             ((TextView) parent.getChildAt(0)).setText(delivery_boy_name);
-            ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+            ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
 
             if (!delivery_boy_name.equalsIgnoreCase("Select Name")) {
                 jdb_id = jdb_ids[position];
@@ -435,7 +441,7 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
                 array[x] = selection_list.get(x).getJomdOrderId();
             }
             array[listsize] = jdb_id;
-            Toast.makeText(this, "size" + String.valueOf(array.length), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "size" + array.length, Toast.LENGTH_SHORT).show();
 //            System.out.println(array[0]);
 //            System.out.println(array[1]);
 //            System.out.println(array[2]);

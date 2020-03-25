@@ -1,7 +1,13 @@
 package com.example.stylishjewelryboxadminphase.activities;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,19 +19,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCat;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCatResponse;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCat;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.network.WebServices;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCat;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.updateCategory.UpdateCategoryResponse;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,11 +44,12 @@ import retrofit2.Response;
 public class UpdateCategoryActivity extends AppCompatActivity {
     WebServices webServices;
     Spinner spv_select_material, spv_select_category;
-    CardView card_selec_category,
-
-    card_details_form_newitem;
+    CardView card_selec_category, card_details_form_newitem;
     Button btnUpdateCategory;
+    private ProgressDialog progressDialog;
     EditText et_updatecat_name, et_updatecat_price;
+    private String mediaPath;
+    private int MY_REQ_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +57,8 @@ public class UpdateCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_update_category);
-
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Updating...");
         initviews();
 
         getMaterialNames();
@@ -53,6 +66,7 @@ public class UpdateCategoryActivity extends AppCompatActivity {
     }
 
     private void initviews() {
+        progressDialog.setMessage("Updating...");
         webServices = WebServices.RETROFIT.create(WebServices.class);
         spv_select_material = findViewById(R.id.spv_select_material_updatecats);
         spv_select_category = findViewById(R.id.spv_select_category_for_update);
@@ -282,30 +296,113 @@ public class UpdateCategoryActivity extends AppCompatActivity {
 
         } else {
 
-            webServices.updateCats(name, price, "http://sourceinflow.com/jewelry/imagefolder/goldbangals.JPEG", ids).enqueue(new Callback<UpdateCategoryResponse>() {
-                @Override
-                public void onResponse(Call<UpdateCategoryResponse> call, Response<UpdateCategoryResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        if (response.body().getStatus()) {
+            if (mediaPath != null) {
+                Toast.makeText(this, name + price + ids, Toast.LENGTH_SHORT).show();
 
-                            Toast.makeText(UpdateCategoryActivity.this, "Status: " + response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(UpdateCategoryActivity.this, "Status: " + response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                uploadFile(price, name, ids);
 
-                }
-
-                @Override
-                public void onFailure(Call<UpdateCategoryResponse> call, Throwable t) {
-                    Toast.makeText(UpdateCategoryActivity.this, "OnFailure: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-
-                }
-            });
+            } else {
+                Toast.makeText(this, "Please Select Image", Toast.LENGTH_SHORT).show();
+            }
 
         }
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted ", Toast.LENGTH_SHORT).show();
 
+
+            } else {
+                Toast.makeText(this, "You can't Run app without permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == 0 && resultCode == RESULT_OK && null != data) {
+                // Get the Image from data
+                Uri selectedImage = data.getData();
+                mediaPath = getRealPathFromURI(selectedImage);
+                Toast.makeText(this, "Path: \n" + mediaPath, Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image/Video", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            Log.d("MYTAG", "onActivityResult: " + e.getMessage());
+        }
+
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private void uploadFile(String price, String category_name, String ID) {
+        progressDialog.show();
+        // Map is used to multipart the file using okhttp3.RequestBody
+        File file = new File(mediaPath);
+
+        // Parsing any Media type file
+        final RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+
+
+        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+        RequestBody bprice = RequestBody.create(MediaType.parse("text/plain"), price);
+        RequestBody cname = RequestBody.create(MediaType.parse("text/plain"), category_name);
+        RequestBody bfkid = RequestBody.create(MediaType.parse("text/plain"), ID);
+        webServices.updateCats(name, image, bfkid, cname, bprice).enqueue(new Callback<UpdateCategoryResponse>() {
+            @Override
+            public void onResponse(Call<UpdateCategoryResponse> call, Response<UpdateCategoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        Toast.makeText(UpdateCategoryActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        et_updatecat_name.setText(null);
+                        et_updatecat_price.setText(null);
+                        mediaPath = null;
+                    } else {
+                        progressDialog.dismiss();
+                        Toast.makeText(UpdateCategoryActivity.this, "" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateCategoryResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(UpdateCategoryActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
+    public void selectimg(View view) {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 0);
+
+    }
 }

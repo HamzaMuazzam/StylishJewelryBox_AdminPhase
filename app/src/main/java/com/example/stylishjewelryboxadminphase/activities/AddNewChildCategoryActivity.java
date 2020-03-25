@@ -1,29 +1,46 @@
 package com.example.stylishjewelryboxadminphase.activities;
 
+import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCat;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCatResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewSubCategory;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCat;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.network.WebServices;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCat;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCatResponse;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,12 +52,19 @@ public class AddNewChildCategoryActivity extends AppCompatActivity {
             card_details_form_newitem;
     WebServices webServices;
     Button btn_insertnewChildCategory;
-
+    String mediaPath;
+    private ProgressDialog progressDialog;
+    private int MY_REQ_CODE = 1001;
+    private EditText et_price_item, et_name_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_add_new_child_category);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading");
+        checkReadPhoneStatePermission();
         initviews();
         getMaterialNames();
 
@@ -48,10 +72,17 @@ public class AddNewChildCategoryActivity extends AppCompatActivity {
 
     private void initviews() {
         webServices = WebServices.RETROFIT.create(WebServices.class);
+
         spv_select_material = findViewById(R.id.spv_select_material);
         spv_select_category = findViewById(R.id.spv_select_category);
+
+
+        et_name_item = findViewById(R.id.et_name_item);
+        et_price_item = findViewById(R.id.et_price_item);
+
         card_selec_category = findViewById(R.id.card_selec_category);
         card_details_form_newitem = findViewById(R.id.card_details_form_newitem);
+
         btn_insertnewChildCategory = findViewById(R.id.btn_insertnewChildCategory);
     }
 
@@ -128,7 +159,7 @@ public class AddNewChildCategoryActivity extends AppCompatActivity {
                     String item = parent.getItemAtPosition(position).toString();
                     String ids = arrayofis[position];
                     ((TextView) parent.getChildAt(0)).setText(item);
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
                     if (!item.equalsIgnoreCase("Select Material")) {
 
                         webServices.getAllCatsByID(ids).enqueue(new Callback<GetAllCatResponse>() {
@@ -228,34 +259,37 @@ public class AddNewChildCategoryActivity extends AppCompatActivity {
                     String item = parent.getItemAtPosition(position).toString();
                     String ids = new_arrayofIDS[position];
                     ((TextView) parent.getChildAt(0)).setText(item);
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
                     if (!item.equalsIgnoreCase("Select category")) {
                         card_details_form_newitem.setVisibility(View.VISIBLE);
                         Log.d(TAG, "onItemSelected: " + ids);
+
+
                         btn_insertnewChildCategory.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                webServices.insertNewSubCategory("Test sub cat name", "789"
-                                        , "null", ids).enqueue(new Callback<InsertNewSubCategory>() {
-                                    @Override
-                                    public void onResponse(Call<InsertNewSubCategory> call, Response<InsertNewSubCategory> response) {
-                                        if (response.isSuccessful() && response.body() != null) {
-                                            Toast.makeText(AddNewChildCategoryActivity.this,
+                                if (mediaPath != null) {
 
-                                            "Status "+response.body().getStatus(),Toast.LENGTH_SHORT).show();
+                                    String name = et_name_item.getText().toString().trim();
+                                    String price = et_price_item.getText().toString().trim();
+                                    if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(price)) {
 
-                                        }
+                                        Toast.makeText(AddNewChildCategoryActivity.this, "Good To Go", Toast.LENGTH_SHORT).show();
+                                        uploadFile(price, name, ids);
+
+
+                                    } else {
+                                        Toast.makeText(AddNewChildCategoryActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
                                     }
 
-                                    @Override
-                                    public void onFailure(Call<InsertNewSubCategory> call, Throwable t) {
 
-                                        Toast.makeText(AddNewChildCategoryActivity.this,
-                                                "onFailure: "+t.getMessage(),Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                } else {
+                                    Toast.makeText(AddNewChildCategoryActivity.this, "Please Select Image", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         });
+
 
                     } else {
                         card_details_form_newitem.setVisibility(View.GONE);
@@ -270,6 +304,129 @@ public class AddNewChildCategoryActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    private void checkReadPhoneStatePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(this).setTitle("Permission Needed")
+                    .setMessage("This  permission needed to run this app properly on your device")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(AddNewChildCategoryActivity.this, new String[]{Manifest.
+                                    permission.READ_EXTERNAL_STORAGE}, MY_REQ_CODE);
+                        }
+                    }).setCancelable(false)
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.
+                    permission.READ_EXTERNAL_STORAGE}, MY_REQ_CODE);
+        }
+
+    }
+
+
+    public void selectChildCategoryImage(View view) {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 0);
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted ", Toast.LENGTH_SHORT).show();
+
+
+            } else {
+                Toast.makeText(this, "You can't Run app without permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == 0 && resultCode == RESULT_OK && null != data) {
+                // Get the Image from data
+                Uri selectedImage = data.getData();
+                mediaPath = getRealPathFromURI(selectedImage);
+                Toast.makeText(this, "Path: \n" + mediaPath, Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image/Video", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            Log.d("MYTAG", "onActivityResult: " + e.getMessage());
+        }
+
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private void uploadFile(String price, String category_name, String ID) {
+        progressDialog.show();
+        // Map is used to multipart the file using okhttp3.RequestBody
+        File file = new File(mediaPath);
+
+        // Parsing any Media type file
+        final RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+
+
+        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+        RequestBody bprice = RequestBody.create(MediaType.parse("text/plain"), price);
+        RequestBody cname = RequestBody.create(MediaType.parse("text/plain"), category_name);
+        RequestBody bfkid = RequestBody.create(MediaType.parse("text/plain"), ID);
+
+        webServices.insertNewSubCategory(name, image, bfkid, cname, bprice).enqueue(new Callback<InsertNewSubCategory>() {
+            @Override
+            public void onResponse(Call<InsertNewSubCategory> call, Response<InsertNewSubCategory> response) {
+                if (response.body() != null && response.isSuccessful()) {
+                    if (response.body().getStatus()) {
+                        Toast.makeText(AddNewChildCategoryActivity.this, "Ok Uploed", Toast.LENGTH_SHORT).show();
+                        mediaPath = null;
+                        et_name_item.setText(null);
+                        et_price_item.setText(null);
+                        progressDialog.dismiss();
+                    } else {
+                        progressDialog.dismiss();
+
+                        Toast.makeText(AddNewChildCategoryActivity.this, "Status: " + response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<InsertNewSubCategory> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(AddNewChildCategoryActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
 

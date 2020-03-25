@@ -84,6 +84,7 @@ public class TotalSaleFragment extends Fragment {
     }
 
     private void getallorders() {
+
         webServices.getAllOrderToMakePercentage(TotalOrdersActivity.LOCATION, TotalOrdersActivity.DATE).enqueue(new Callback<GetAllForPercentageResponse>() {
             @Override
             public void onResponse(Call<GetAllForPercentageResponse> call, Response<GetAllForPercentageResponse> response) {

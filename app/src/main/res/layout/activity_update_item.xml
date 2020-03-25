@@ -117,8 +117,9 @@
                         android:id="@+id/et_updatechildename"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
+
                         android:layout_marginVertical="5dp"
-                        android:hint="Child Name"
+                        android:hint="Name"
                         android:textColorHint="@color/appsecondrycolor" />
 
 
@@ -127,8 +128,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginVertical="5dp"
-                        android:hint="Child Price"
+                        android:hint="Price"
                         android:inputType="number"
+                        android:textColorHint="@color/appsecondrycolor" />
+
+                    <EditText
+                        android:id="@+id/et_updatechildedesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginVertical="5dp"
+                        android:hint="Description"
                         android:textColorHint="@color/appsecondrycolor" />
 
                     <Button
@@ -137,6 +146,7 @@
                         android:layout_height="35dp"
                         android:layout_gravity="end"
                         android:layout_marginRight="9dp"
+                        android:onClick="slctimage"
                         android:layout_weight="1"
                         android:background="@drawable/button_background"
                         android:paddingHorizontal="9dp"

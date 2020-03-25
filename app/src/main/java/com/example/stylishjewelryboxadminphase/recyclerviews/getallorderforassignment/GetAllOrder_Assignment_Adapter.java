@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.activities.OrderAssignmentActivity;
-import com.example.stylishjewelryboxadminphase.network.GetOrderForAssignment;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetOrderForAssignment;
 
 import java.util.List;
 

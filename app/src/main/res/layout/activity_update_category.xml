@@ -86,6 +86,7 @@
                         android:layout_height="50dp"
                         android:layout_marginVertical="5dp"
                         android:hint="Price"
+                        android:inputType="number"
                         android:textColorHint="@color/appsecondrycolor" />
 
 
@@ -94,6 +95,7 @@
 
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
+                        android:onClick="selectimg"
                         android:layout_gravity="end"
                         android:layout_marginRight="9dp"
                         android:layout_weight="1"

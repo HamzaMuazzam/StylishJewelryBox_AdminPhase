@@ -93,21 +93,23 @@
                         android:gravity="center"
                         android:lines="2"
                         android:layout_marginTop="5dp"
-                        android:text="289"
+                        android:id="@+id/tv_main_totalOrder"
+                        android:text="000"
                         android:textSize="50sp"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
                     <TextView
 
                         android:textColor="@color/appprimarycolor"
-                        android:id="@+id/tv_catsnames1"
+                        android:id="@+id/tv_totalDeliverOrders"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:lines="2"
+
                         android:layout_marginTop="5dp"
-                        android:text="106"
+                        android:text="000"
                         android:textSize="50sp"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 

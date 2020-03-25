@@ -152,6 +152,7 @@
 
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
+                        android:onClick="selectimgs"
                         android:layout_gravity="end"
                         android:layout_marginRight="9dp"
                         android:layout_weight="1"

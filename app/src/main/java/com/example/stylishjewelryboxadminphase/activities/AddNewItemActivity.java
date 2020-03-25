@@ -1,16 +1,25 @@
 package com.example.stylishjewelryboxadminphase.activities;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -19,28 +28,40 @@ import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeteri
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCatResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllSubCat;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllSubCatsResponse;
-import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewItemResponse;
+import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewSubCategory;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCat;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.network.WebServices;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCat;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCatResponse;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddNewItemActivity extends AppCompatActivity {
     public static final String TAG = "MYTAG";
-    Spinner spv_select_material, spv_select_category, spv_select__subcategory;
-    CardView card_selec_category, card_select_sub_category, card_details_form_newitem;
-    WebServices webServices;
-    Button btn_insertNewItem;
+    private Spinner spv_select_material, spv_select_category, spv_select__subcategory;
+    private CardView card_selec_category, card_select_sub_category, card_details_form_newitem;
+    private WebServices webServices;
+    private Button btn_insertNewItem;
+    private EditText et_name_item, et_desc_item, et_price_item;
+    private String mediaPath;
+    private int MY_REQ_CODE = 1001;
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_item);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading...");
+
         initviews();
         getMaterialNames();
     }
@@ -51,6 +72,14 @@ public class AddNewItemActivity extends AppCompatActivity {
         spv_select_material = findViewById(R.id.spv_select_material);
         spv_select_category = findViewById(R.id.spv_select_category);
         spv_select__subcategory = findViewById(R.id.spv_select__subcategory);
+
+        et_price_item = findViewById(R.id.et_price_item);
+        et_desc_item = findViewById(R.id.et_desc_item);
+        et_name_item = findViewById(R.id.et_name_item);
+
+
+        btn_insertNewItem = findViewById(R.id.btn_insertNewItem);
+        btn_insertNewItem = findViewById(R.id.btn_insertNewItem);
         btn_insertNewItem = findViewById(R.id.btn_insertNewItem);
 
 
@@ -133,7 +162,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                     String item = parent.getItemAtPosition(position).toString();
                     String ids = arrayofis[position];
                     ((TextView) parent.getChildAt(0)).setText(item);
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
                     if (!item.equalsIgnoreCase("Select Material")) {
                         card_details_form_newitem.setVisibility(View.GONE);
                         webServices.getAllCatsByID(ids).enqueue(new Callback<GetAllCatResponse>() {
@@ -239,7 +268,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                     String ids = new_arrayofIDS[position];
 
                     ((TextView) parent.getChildAt(0)).setText(item);
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
                     if (!item.equalsIgnoreCase("Select category")) {
                         card_details_form_newitem.setVisibility(View.GONE);
 
@@ -337,7 +366,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                     String item = parent.getItemAtPosition(position).toString();
                     String str_id = ids[position];
                     ((TextView) parent.getChildAt(0)).setText(item);
-                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#031A9E"));
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.parseColor("#000000"));
                     if (!item.equalsIgnoreCase("Select child category")) {
                         Log.d(TAG, "onItemSelected: " + str_id);
                         card_details_form_newitem.setVisibility(View.VISIBLE);
@@ -346,33 +375,23 @@ public class AddNewItemActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
 
-                                webServices.insertNewItem("this is name of item", "6643", "http://sourceinflow.com/jewelry/imagefolder/goldbangals.JPEG",
-                                        "this is item desc", str_id).enqueue(new Callback<InsertNewItemResponse>() {
-                                    @Override
-                                    public void onResponse(Call<InsertNewItemResponse> call, Response<InsertNewItemResponse> response) {
-                                        if (response.isSuccessful() && response.body() != null) {
-                                            if (response.body().getStatus()) {
+                                String desc = et_desc_item.getText().toString().trim();
+                                String name = et_name_item.getText().toString().trim();
+                                String price = et_price_item.getText().toString().trim();
+                                if (!TextUtils.isEmpty(desc) && !TextUtils.isEmpty(price) && !TextUtils.isEmpty(name)) {
 
-                                                Toast.makeText(AddNewItemActivity.this, "Status : " + response.body().getStatus(),
-                                                        Toast.LENGTH_SHORT).show();
-                                            } else {
+                                    if (mediaPath != null) {
 
+                                        uploadFile(name, price, desc, str_id);
 
-                                                Toast.makeText(AddNewItemActivity.this, "Status : " + response.body().getStatus(),
-                                                        Toast.LENGTH_SHORT).show();
-                                            }
-
-                                        }
-
-
+                                    } else {
+                                        Toast.makeText(AddNewItemActivity.this, "Please Select Image", Toast.LENGTH_SHORT).show();
                                     }
 
-                                    @Override
-                                    public void onFailure(Call<InsertNewItemResponse> call, Throwable t) {
-                                        Toast.makeText(AddNewItemActivity.this, "onFailure: " + t.getMessage(),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+
+                                } else {
+                                    Toast.makeText(AddNewItemActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
+                                }
 
                             }
                         });
@@ -393,4 +412,112 @@ public class AddNewItemActivity extends AppCompatActivity {
 
 
     }
+
+    private void uploadFile(String name, String price, String desc, String str_id) {
+        progressDialog.show();
+
+// Map is used to multipart the file using okhttp3.RequestBody
+        File file = new File(mediaPath);
+
+        // Parsing any Media type file
+        final RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+
+
+        RequestBody imagename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+        RequestBody bprice = RequestBody.create(MediaType.parse("text/plain"), price);
+        RequestBody cname = RequestBody.create(MediaType.parse("text/plain"), name);
+        RequestBody bfkid = RequestBody.create(MediaType.parse("text/plain"), str_id);
+        RequestBody descc = RequestBody.create(MediaType.parse("text/plain"), desc);
+
+
+        webServices.insertNewItem(imagename, image, bfkid, cname, bprice, descc).enqueue(new Callback<InsertNewSubCategory>() {
+            @Override
+            public void onResponse(Call<InsertNewSubCategory> call, Response<InsertNewSubCategory> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        Toast.makeText(AddNewItemActivity.this, "Item Updated", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+
+                        et_price_item.setText(null);
+                        et_name_item.setText(null);
+                        et_desc_item.setText(null);
+                        mediaPath = null;
+
+
+                    }
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(AddNewItemActivity.this, response.body().getName(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<InsertNewSubCategory> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(AddNewItemActivity.this, "onFailure\n" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    public void chooseimage(View view) {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 0);
+
+
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == 0 && resultCode == RESULT_OK && null != data) {
+                // Get the Image from data
+                Uri selectedImage = data.getData();
+                mediaPath = getRealPathFromURI(selectedImage);
+                Toast.makeText(this, "Path: \n" + mediaPath, Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image/Video", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            Log.d("MYTAG", "onActivityResult: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted ", Toast.LENGTH_SHORT).show();
+
+
+            } else {
+                Toast.makeText(this, "You can't Run app without permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+
 }

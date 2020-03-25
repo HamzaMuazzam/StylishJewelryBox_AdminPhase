@@ -1,9 +1,9 @@
-package com.example.stylishjewelryboxadminphase.network;
+package com.example.stylishjewelryboxadminphase.orderfromnotification;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GetAllOrdersByjdb {
+public class GetODetailNotification {
 
     @SerializedName("jomd_order_id")
     @Expose
@@ -11,9 +11,6 @@ public class GetAllOrdersByjdb {
     @SerializedName("jomd_datetime")
     @Expose
     private String jomdDatetime;
-    @SerializedName("jomd_uid")
-    @Expose
-    private String jomdUid;
     @SerializedName("jomd_location")
     @Expose
     private String jomdLocation;
@@ -26,53 +23,59 @@ public class GetAllOrdersByjdb {
     @SerializedName("jomd_instructions")
     @Expose
     private String jomdInstructions;
-    @SerializedName("delivered_time")
+    @SerializedName("orderstatus")
     @Expose
-    private String deliveredTime;
-    @SerializedName("delivered_date")
+    private String orderstatus;
+    @SerializedName("jcd_id_fk")
     @Expose
-    private String deliveredDate;
-    @SerializedName("delivered_by")
+    private String jcdIdFk;
+    @SerializedName("total cost")
     @Expose
-    private String deliveredBy;
-    @SerializedName("jdb_id_fk")
+    private String totalCost;
+    @SerializedName("jcd_name")
     @Expose
-    private String jdbIdFk;
+    private String jcdName;
+    @SerializedName("jcd_phone")
+    @Expose
+    private String jcdPhone;
+    @SerializedName("total items")
+    @Expose
+    private String totalItems;
 
     /**
      * No args constructor for use in serialization
-     *
      */
-    public GetAllOrdersByjdb() {
+    public GetODetailNotification() {
     }
 
     /**
-     *
-     * @param deliveredDate
+     * @param jcdPhone
+     * @param totalItems
      * @param jomdLocation
-     * @param deliveredBy
+     * @param jcdIdFk
+     * @param orderstatus
      * @param jomdOrderId
      * @param jomdLatitude
      * @param jomdInstructions
-     * @param jdbIdFk
-     * @param jomdUid
      * @param jomdLongitude
      * @param jomdDatetime
-     * @param deliveredTime
+     * @param jcdName
+     * @param totalCost
      */
-    public GetAllOrdersByjdb(String jomdOrderId, String jomdDatetime, String jomdUid, String jomdLocation, String jomdLongitude, String jomdLatitude, String jomdInstructions, String deliveredTime, String deliveredDate, String deliveredBy, String jdbIdFk) {
+    public GetODetailNotification(String jomdOrderId, String jomdDatetime, String jomdLocation, String jomdLongitude, String jomdLatitude, String jomdInstructions, String orderstatus, String jcdIdFk, String totalCost, String jcdName, String jcdPhone, String totalItems) {
         super();
         this.jomdOrderId = jomdOrderId;
         this.jomdDatetime = jomdDatetime;
-        this.jomdUid = jomdUid;
         this.jomdLocation = jomdLocation;
         this.jomdLongitude = jomdLongitude;
         this.jomdLatitude = jomdLatitude;
         this.jomdInstructions = jomdInstructions;
-        this.deliveredTime = deliveredTime;
-        this.deliveredDate = deliveredDate;
-        this.deliveredBy = deliveredBy;
-        this.jdbIdFk = jdbIdFk;
+        this.orderstatus = orderstatus;
+        this.jcdIdFk = jcdIdFk;
+        this.totalCost = totalCost;
+        this.jcdName = jcdName;
+        this.jcdPhone = jcdPhone;
+        this.totalItems = totalItems;
     }
 
     public String getJomdOrderId() {
@@ -89,14 +92,6 @@ public class GetAllOrdersByjdb {
 
     public void setJomdDatetime(String jomdDatetime) {
         this.jomdDatetime = jomdDatetime;
-    }
-
-    public String getJomdUid() {
-        return jomdUid;
-    }
-
-    public void setJomdUid(String jomdUid) {
-        this.jomdUid = jomdUid;
     }
 
     public String getJomdLocation() {
@@ -131,36 +126,52 @@ public class GetAllOrdersByjdb {
         this.jomdInstructions = jomdInstructions;
     }
 
-    public String getDeliveredTime() {
-        return deliveredTime;
+    public String getOrderstatus() {
+        return orderstatus;
     }
 
-    public void setDeliveredTime(String deliveredTime) {
-        this.deliveredTime = deliveredTime;
+    public void setOrderstatus(String orderstatus) {
+        this.orderstatus = orderstatus;
     }
 
-    public String getDeliveredDate() {
-        return deliveredDate;
+    public String getJcdIdFk() {
+        return jcdIdFk;
     }
 
-    public void setDeliveredDate(String deliveredDate) {
-        this.deliveredDate = deliveredDate;
+    public void setJcdIdFk(String jcdIdFk) {
+        this.jcdIdFk = jcdIdFk;
     }
 
-    public String getDeliveredBy() {
-        return deliveredBy;
+    public String getTotalCost() {
+        return totalCost;
     }
 
-    public void setDeliveredBy(String deliveredBy) {
-        this.deliveredBy = deliveredBy;
+    public void setTotalCost(String totalCost) {
+        this.totalCost = totalCost;
     }
 
-    public String getJdbIdFk() {
-        return jdbIdFk;
+    public String getJcdName() {
+        return jcdName;
     }
 
-    public void setJdbIdFk(String jdbIdFk) {
-        this.jdbIdFk = jdbIdFk;
+    public void setJcdName(String jcdName) {
+        this.jcdName = jcdName;
+    }
+
+    public String getJcdPhone() {
+        return jcdPhone;
+    }
+
+    public void setJcdPhone(String jcdPhone) {
+        this.jcdPhone = jcdPhone;
+    }
+
+    public String getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(String totalItems) {
+        this.totalItems = totalItems;
     }
 
 }

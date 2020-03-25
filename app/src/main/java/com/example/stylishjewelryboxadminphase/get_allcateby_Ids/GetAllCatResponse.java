@@ -1,9 +1,10 @@
-package com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids;
+package com.example.stylishjewelryboxadminphase.get_allcateby_Ids;
 
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class GetAllCatResponse {
 

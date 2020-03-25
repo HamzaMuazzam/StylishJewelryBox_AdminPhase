@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stylishjewelryboxadminphase.R;
 import com.example.stylishjewelryboxadminphase.activities.AddActivity;
 import com.example.stylishjewelryboxadminphase.activities.OrderAssignmentActivity;
+import com.example.stylishjewelryboxadminphase.activities.OrderByNotificationActivity;
 import com.example.stylishjewelryboxadminphase.activities.SeeDeliveryBoysActivity;
 import com.example.stylishjewelryboxadminphase.activities.TotalOrdersActivity;
 import com.example.stylishjewelryboxadminphase.activities.UpdateActivity;
@@ -79,7 +80,8 @@ public class Cats_Adapter extends RecyclerView.Adapter<Cats_Viewholder> {
                     break;
                 case 4:
 
-                    //do here
+                    context.startActivity(new Intent(context, OrderByNotificationActivity.class));
+
 
                     break;
                 case 5:

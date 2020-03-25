@@ -1,7 +1,13 @@
 package com.example.stylishjewelryboxadminphase.activities;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -21,29 +28,39 @@ import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeteri
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCatResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllSubCat;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllSubCatsResponse;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCat;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.network.WebServices;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCat;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCatResponse;
 import com.example.stylishjewelryboxadminphase.updateCategory.UpdateResponse;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UpdateChildActivity extends AppCompatActivity {
-    public static final String TAG = "MYTAG";
-    Spinner spv_select_material, spv_select_category, spv_select_childtoUpdatecategory;
-    CardView card_selec_category, card_select_childtoUpdatecategory, card_updateChildCategry;
-    EditText et_updatechildename, et_updatechildeprice;
-    WebServices webServices;
-    Button btn_updatechildCategory;
+    private String TAG = "MYTAG";
+    private Spinner spv_select_material, spv_select_category, spv_select_childtoUpdatecategory;
+    private CardView card_selec_category, card_select_childtoUpdatecategory, card_updateChildCategry;
+    private EditText et_updatechildename, et_updatechildeprice;
+    private WebServices webServices;
+    private Button btn_updatechildCategory;
+    private String mediaPath;
+    private int MY_REQ_CODE = 1001;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_child);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Updating...");
+
         initviews();
         getMaterialNames();
     }
@@ -356,28 +373,14 @@ public class UpdateChildActivity extends AppCompatActivity {
                                     et_updatechildeprice.setError("Can't be empty");
                                     et_updatechildeprice.setFocusable(true);
                                 } else {
-                                    webServices.updateChildCats(name, price, "http://sourceinflow.com/jewelry/imagefolder/goldbangals.JPEG",
-                                            ids).enqueue(new Callback<UpdateResponse>() {
-                                        @Override
-                                        public void onResponse(Call<UpdateResponse> call, Response<UpdateResponse> response) {
-                                            if (response.isSuccessful() && response.body() != null) {
-                                                if (response.body().getStatus()) {
-                                                    et_updatechildename.setText(null);
-                                                    et_updatechildeprice.setText(null);
-                                                    Toast.makeText(UpdateChildActivity.this, "Status: " + response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    Toast.makeText(UpdateChildActivity.this, "Nothing Found", Toast.LENGTH_SHORT).show();
 
-                                                }
-                                            }
-                                        }
+                                    if (mediaPath != null) {
 
-                                        @Override
-                                        public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                                            Toast.makeText(UpdateChildActivity.this, "onFailure: " + t.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                        }
-                                    });
+                                        uploadFile(price, name, ids);
+                                    } else {
+                                        Toast.makeText(UpdateChildActivity.this, "Please Select Image", Toast.LENGTH_SHORT).show();
+                                    }
 
                                 }
 
@@ -403,4 +406,103 @@ public class UpdateChildActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted ", Toast.LENGTH_SHORT).show();
+
+
+            } else {
+                Toast.makeText(this, "You can't Run app without permission", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == 0 && resultCode == RESULT_OK && null != data) {
+                // Get the Image from data
+                Uri selectedImage = data.getData();
+                mediaPath = getRealPathFromURI(selectedImage);
+                Toast.makeText(this, "Path: \n" + mediaPath, Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image/Video", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+            Log.d("MYTAG", "onActivityResult: " + e.getMessage());
+        }
+
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private void uploadFile(String price, String category_name, String ID) {
+        progressDialog.show();
+        // Map is used to multipart the file using okhttp3.RequestBody
+        File file = new File(mediaPath);
+
+        // Parsing any Media type file
+        final RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+
+
+        RequestBody name = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+        RequestBody bprice = RequestBody.create(MediaType.parse("text/plain"), price);
+        RequestBody cname = RequestBody.create(MediaType.parse("text/plain"), category_name);
+        RequestBody bfkid = RequestBody.create(MediaType.parse("text/plain"), ID);
+        webServices.updateChildCats(name, image, bfkid, cname, bprice).enqueue(new Callback<UpdateResponse>() {
+            @Override
+            public void onResponse(Call<UpdateResponse> call, Response<UpdateResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus()) {
+                        Toast.makeText(UpdateChildActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        mediaPath = null;
+                        et_updatechildename.setText(null);
+                        et_updatechildeprice.setText(null);
+
+                    } else {
+                        progressDialog.dismiss();
+                        Toast.makeText(UpdateChildActivity.this, "" + response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateResponse> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(UpdateChildActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
+    public void selectimgs(View view) {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 0);
+
+
+    }
 }

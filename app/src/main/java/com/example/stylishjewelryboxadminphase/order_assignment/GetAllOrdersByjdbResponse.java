@@ -1,9 +1,10 @@
-package com.example.stylishjewelryboxadminphase.network;
+package com.example.stylishjewelryboxadminphase.order_assignment;
 
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class GetAllOrdersByjdbResponse {
 

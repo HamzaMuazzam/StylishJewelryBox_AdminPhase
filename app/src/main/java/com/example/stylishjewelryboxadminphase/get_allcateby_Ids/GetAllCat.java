@@ -1,4 +1,4 @@
-package com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids;
+package com.example.stylishjewelryboxadminphase.get_allcateby_Ids;
 
 
 import com.google.gson.annotations.Expose;

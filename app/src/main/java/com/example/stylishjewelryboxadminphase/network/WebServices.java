@@ -4,12 +4,15 @@ package com.example.stylishjewelryboxadminphase.network;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllMeterialCatResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.GetAllSubCatsResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewCategory;
-import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewItemResponse;
 import com.example.stylishjewelryboxadminphase.addcategoris.addcats.InsertNewSubCategory;
 import com.example.stylishjewelryboxadminphase.addcategoris.addnewMaterial.AddNewMaterialResponse;
 import com.example.stylishjewelryboxadminphase.calculations.getallordersbydatelocation.GetOrderByDateLocationResponse;
 import com.example.stylishjewelryboxadminphase.calculations.percentages.GetAllForPercentageResponse;
-import com.example.stylishjewelryboxadminphase.network.get_allcateby_Ids.GetAllCatResponse;
+import com.example.stylishjewelryboxadminphase.get_allcateby_Ids.GetAllCatResponse;
+import com.example.stylishjewelryboxadminphase.get_order_and_delivered.GetAllOrderAndDeliveredResponse;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetAllOrdersByjdbResponse;
+import com.example.stylishjewelryboxadminphase.order_assignment.GetOrderForAssignmentResponse;
+import com.example.stylishjewelryboxadminphase.orderfromnotification.GetODetailNotificationResponse;
 import com.example.stylishjewelryboxadminphase.recyclerviews.assignorder.AssignOrders;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getalldeliveryboys.GetAllDeliveryBoyResponse;
 import com.example.stylishjewelryboxadminphase.recyclerviews.getunassignedorders.gettotalorders.UnassignedDateLocationResponse;
@@ -23,13 +26,17 @@ import com.example.stylishjewelryboxadminphase.updateCategory.UpdateResponse;
 
 import org.json.JSONArray;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface WebServices {
@@ -63,17 +70,27 @@ public interface WebServices {
     String GETALLORDERPERCENTAGES = "getAllOrderForPercentage.php";
     String SEE_JDB_ORDERBYSTATUS_DATE = "seedlieveryboys/getpendingbydate.php";
     String SEE_JDB_ASSIGNED_ORDERBYSTATUS_DATE = "seedlieveryboys/get_assignedorderbydate.php";
+    String GETORDERSBYNOTIFICATION = "get_order_details_by_noti.php";
+    String GETALLORDER_DELIVERED = "get_total_and_delivered_by_date.php";
 
 
     Retrofit RETROFIT = new Retrofit.Builder().baseUrl(BASEURL).addConverterFactory(GsonConverterFactory.create()).build();
 
 
     @FormUrlEncoded
+    @POST(GETALLORDER_DELIVERED)
+    Call<GetAllOrderAndDeliveredResponse> getAllOrderAndDelivered(@Field("date") String date);
+
+    @FormUrlEncoded
     @POST(SEE_JDB_ASSIGNED_ORDERBYSTATUS_DATE)
     Call<SeeJDBAssignedOrderResponse> seeJDB_Assigned_order_By_DateStatus(@Field("id") String id,
-                                                                 @Field("currentdate") String currentdate,
-                                                                 @Field("last30days") String last30days,
-                                                                 @Field("last7days") String last7days);
+                                                                          @Field("currentdate") String currentdate,
+                                                                          @Field("last30days") String last30days,
+                                                                          @Field("last7days") String last7days);
+
+    @FormUrlEncoded
+    @POST(GETORDERSBYNOTIFICATION)
+    Call<GetODetailNotificationResponse> getOrderDetailsFromNotification(@Field("o_id") String id);
 
     @FormUrlEncoded
     @POST(SEE_JDB_ORDERBYSTATUS_DATE)
@@ -132,50 +149,72 @@ public interface WebServices {
     Call<AddNewMaterialResponse> addNewMaterial(@Field("name") String name, @Field("price") String price);
 
 
-    @FormUrlEncoded
+    /***
+     * upload image and insert new category
+     * ***/
+
+    @Multipart
     @POST(INSERNEWCATEGORY)
-    Call<InsertNewCategory> insertNewCategory(@Field("name") String name,
-                                              @Field("price") String price
-            , @Field("image") String image
-            , @Field("id_fk") String id_fk);
+    Call<InsertNewCategory> insertNewCategory(@Part("name") RequestBody name,
+                                              @Part MultipartBody.Part file, @Part("fkid") RequestBody fkid,
+                                              @Part("jcname") RequestBody jcname, @Part("price") RequestBody price);
 
-    @FormUrlEncoded
+
+    @Multipart
     @POST(INSERNEW_SUB_CATEGORY)
-    Call<InsertNewSubCategory> insertNewSubCategory(@Field("name") String name,
-                                                    @Field("price") String price
-            , @Field("image") String image
-            , @Field("id_fk") String id_fk);
+    Call<InsertNewSubCategory> insertNewSubCategory(@Part("name") RequestBody name,
+                                                    @Part MultipartBody.Part file, @Part("fkid") RequestBody fkid,
+                                                    @Part("jcname") RequestBody jcname, @Part("price") RequestBody price);
 
 
-    @FormUrlEncoded
+    @Multipart
     @POST(INSERT_NEW_ITEM)
-    Call<InsertNewItemResponse> insertNewItem(@Field("name") String name,
-                                              @Field("price") String price
-            , @Field("image") String image
-            , @Field("desc") String desc
-            , @Field("id_fk") String id_fk);
+    Call<InsertNewSubCategory> insertNewItem(@Part("name") RequestBody name,
+                                             @Part MultipartBody.Part file, @Part("fkid") RequestBody fkid,
+                                             @Part("jcname") RequestBody jcname, @Part("price") RequestBody price, @Part("desc") RequestBody desc);
 
-    @FormUrlEncoded
+
+    @Multipart
     @POST(UPDATE_Category)
-    Call<UpdateCategoryResponse> updateCats(@Field("name") String name,
-                                            @Field("price") String price
-            , @Field("image") String image
-            , @Field("id") String id_fk);
+    Call<UpdateCategoryResponse> updateCats(@Part("name") RequestBody name,
+                                            @Part MultipartBody.Part file, @Part("cid") RequestBody cid,
+                                            @Part("cname") RequestBody cname, @Part("cprice") RequestBody cprice);
 
-    @FormUrlEncoded
+
+    @Multipart
     @POST(UPDATE_childCategory)
-    Call<UpdateResponse> updateChildCats(@Field("name") String name,
-                                         @Field("price") String price
-            , @Field("image") String image
-            , @Field("id") String id_fk);
+    Call<UpdateResponse> updateChildCats(@Part("name") RequestBody name,
+                                         @Part MultipartBody.Part file, @Part("cid") RequestBody cid,
+                                         @Part("cname") RequestBody cname, @Part("cprice") RequestBody cprice);
 
 
-    @FormUrlEncoded
+    @Multipart
     @POST(UPDATE_ITEM)
-    Call<UpdateResponse> updateSingleItem(@Field("name") String name,
-                                          @Field("price") String price,
-                                          @Field("desc") String desc,
-                                          @Field("image") String image, @Field("id") String id_fk);
+    Call<UpdateResponse> updateSingleItem(@Part("name") RequestBody name,
+                                          @Part MultipartBody.Part file, @Part("cid") RequestBody cid,
+                                          @Part("cname") RequestBody cname, @Part("cprice") RequestBody cprice
+            , @Part("cdesc") RequestBody cdesc);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @FormUrlEncoded
