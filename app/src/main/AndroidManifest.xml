@@ -24,9 +24,10 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".activities.OrderByNotificationActivity"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activities.SeeDeliveryBoysActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

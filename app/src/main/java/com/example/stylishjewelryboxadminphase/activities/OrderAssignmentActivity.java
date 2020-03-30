@@ -337,7 +337,9 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
                         if (response.isSuccessful() && response.body() != null) {
                             List<GetAllOrdersByjdb> list = response.body().getGetAllOrdersByjdb();
                             if (response.body().getStatus()) {
-                                Toast.makeText(OrderAssignmentActivity.this, "" + list.size(), Toast.LENGTH_SHORT).show();
+
+//                                Toast.makeText(OrderAssignmentActivity.this, "" + list.size(), Toast.LENGTH_SHORT).show();
+
                                 card_date_calender.setVisibility(View.VISIBLE);
                                 tv_numberoforders.setText(String.valueOf(list.size()));
                                 tv_dateofcalneder.setText(currentDate);
@@ -430,7 +432,6 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
     public void assign_orders() {
 
         int listsize = selection_list.size();
-
         if (listsize == 0) {
             Toast.makeText(this, "Please Select any Order first", Toast.LENGTH_LONG).show();
         } else {
@@ -441,11 +442,7 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
                 array[x] = selection_list.get(x).getJomdOrderId();
             }
             array[listsize] = jdb_id;
-            Toast.makeText(this, "size" + array.length, Toast.LENGTH_SHORT).show();
-//            System.out.println(array[0]);
-//            System.out.println(array[1]);
-//            System.out.println(array[2]);
-//            System.out.println(array[3]);
+
 
             JSONArray json_array = new JSONArray();
             for (String s : array) {
@@ -454,32 +451,52 @@ public class OrderAssignmentActivity extends AppCompatActivity implements Adapte
 
             System.out.println(json_array);
 
-            webServices.assign_Orders(json_array).enqueue(new Callback<AssignOrders>() {
-                @Override
-                public void onResponse(Call<AssignOrders> call, Response<AssignOrders> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        if (response.body().getStatus()) {
 
-                            Toast.makeText(OrderAssignmentActivity.this, "status true ", Toast.LENGTH_LONG).show();
-                            getOrdersForAssignment(strDate_getorderforassignment, location);
-                        } else {
-                            Toast.makeText(OrderAssignmentActivity.this, "status false ", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Date : " + strDate_getorderforassignment + "\n total orders " + (json_array.length() - 1) + "\n Lcoation: " + location
+                    + "\n ID: " + jdb_id, Toast.LENGTH_SHORT).show();
+
+
+            webServices.assign_Orders(json_array, "/topics/" + jdb_id, strDate_getorderforassignment, location, String.valueOf(json_array.length() - 1))
+                    .enqueue(new Callback<AssignOrders>() {
+                        @Override
+                        public void onResponse(Call<AssignOrders> call, Response<AssignOrders> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                if (response.body().getStatus()) {
+
+                                    Toast.makeText(OrderAssignmentActivity.this, "status true ", Toast.LENGTH_LONG).show();
+
+                                    if (selection_list != null) {
+                                        selection_list.clear();
+
+                                    }
+
+                                    getOrdersForAssignment(strDate_getorderforassignment, location);
+                                } else {
+                                    Toast.makeText(OrderAssignmentActivity.this, "status false ", Toast.LENGTH_LONG).show();
+
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<AssignOrders> call, Throwable t) {
+                            Toast.makeText(OrderAssignmentActivity.this, "OnFailure :" + t.getMessage(), Toast.LENGTH_LONG).show();
 
 
                         }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AssignOrders> call, Throwable t) {
-                    Toast.makeText(OrderAssignmentActivity.this, "OnFailure :" + t.getMessage(), Toast.LENGTH_LONG).show();
-
-
-                }
-            });
-
-
-
+                    });
         }
     }
+
+    public String removeLeadingPlus(String digits) {
+        //String.format("%.0f", Double.parseDouble(digits)) //Alternate Solution
+//        String regex = "^"+"+";
+//        return digits.replaceAll(regex, "");
+        StringBuffer buffer = new StringBuffer(digits);
+        StringBuffer buffer1 = buffer.deleteCharAt(0);
+        return buffer1.toString();
+    }
+
+
 }

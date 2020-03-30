@@ -23,6 +23,8 @@ public class FcmMessageService extends FirebaseMessagingService {
         Log.d("MYTAG", "onMessageReceived: ");
 
         Log.d("MYTAG", "onMessageReceived: Message received from  " + remoteMessage.getFrom());
+
+
         if (remoteMessage.getNotification() != null) {
 //            String title = remoteMessage.getNotification().getTitle();
 //            String body = remoteMessage.getNotification().getBody();

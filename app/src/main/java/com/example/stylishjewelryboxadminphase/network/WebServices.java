@@ -42,7 +42,6 @@ import retrofit2.http.Query;
 public interface WebServices {
     String BASEURL = "http://sourceinflow.com/jewelry/apis/";
 
-
     String GETALLDELIVERYBOYS = "getalldeliveryboys.php";
     String GETALLORDERSBYJDB = "getallordersofjdb.php";
     String GETORDERSFORASSIGNMENT = "get_order_for_Assignment_to_boy.php";
@@ -52,16 +51,12 @@ public interface WebServices {
     String GETORDERBYLOCAIONDATE = "getAllOrderbyDate_location.php";
     String GETORDERBYDATELOCATIONSTATUS = "getByLocationDATEStatus.php";
     String GETUNASSIGNEDORDERS = "getunassignedOrders.php";
-
     String ADD_MATERIAL = "add_new_Material.php";
     String GET_JDB_DETAILS = "get_jdb_Details.php";
-
-
     String UPDATE_MATERIAL_NAME = "updatemeterial.php";
     String UPDATE_Category = "updateCategory.php";
     String UPDATE_childCategory = "updatesubcategory.php";
     String UPDATE_ITEM = "updateSOS.php";
-
     String INSERNEWCATEGORY = "insertNewCategory.php";
     String INSERNEW_SUB_CATEGORY = "inser_sub_cats.php";
     String INSERT_NEW_ITEM = "insert_into_sos_cats.php";
@@ -196,27 +191,6 @@ public interface WebServices {
             , @Part("cdesc") RequestBody cdesc);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @FormUrlEncoded
     @POST(GETORDERBYDATELOCATIONSTATUS)
     Call<GetOrderByDateLocationResponse> getOrdersByLocationDateStatus(@Field("location") String location,
@@ -230,9 +204,16 @@ public interface WebServices {
                                                              @Field("assignment") String assignment
     );
 
-    //    @FormUrlEncoded
+    @FormUrlEncoded
     @POST(ASSIGNORDERS)
-    Call<AssignOrders> assign_Orders(@Query("ids") JSONArray status);
+    Call<AssignOrders> assign_Orders(@Query("ids") JSONArray status,
+
+                                     @Field("topicname") String topicname
+            , @Field("date") String date,
+                                     @Field("location") String location,
+                                     @Field("totalorders") String totalorders
+
+    );
 
     @FormUrlEncoded
     @POST(GETALLORDERPERCENTAGES)
